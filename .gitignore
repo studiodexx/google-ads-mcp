@@ -37,3 +37,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 .nox/
+# Modified by studiodexx: local credentials and audit files
+.env
+.env.*
+*.jsonl
+.venv/

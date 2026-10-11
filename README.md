@@ -499,3 +499,10 @@ How many active campaigns do I have for customer id 1234567890
 Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md).
 Project maintainers can find the Trusted Publishing and release procedure in
 the [release guide](docs/releasing.md).
+
+## Ferramentas de escrita deste fork
+
+Modificado por studiodexx: ferramentas opcionais para criar campanhas Search,
+grupos e anúncios PAUSED, alterar orçamento e pausar/ativar com confirmação.
+Consulte [configuração, proteções e teste em conta de teste](docs/write-tools.md).
+O namespace de escrita vem desabilitado.

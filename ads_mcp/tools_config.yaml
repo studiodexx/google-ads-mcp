@@ -7,3 +7,5 @@ namespaces:
   customers: true
   search: true
   metadata: true
+  # Modified by studiodexx: writing requires explicit opt-in.
+  write: false
