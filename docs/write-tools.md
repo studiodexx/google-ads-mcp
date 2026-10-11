@@ -21,7 +21,6 @@ do processo, usando seu gerenciador de segredos:
 - GOOGLE_ADS_CLIENT_ID
 - GOOGLE_ADS_CLIENT_SECRET
 - GOOGLE_ADS_REFRESH_TOKEN
-- GOOGLE_ADS_DEVELOPER_TOKEN
 - GOOGLE_ADS_LOGIN_CUSTOMER_ID (administrador, quando necessário)
 - MAX_DAILY_BUDGET (valor positivo na moeda da conta, sem padrão)
 - GOOGLE_ADS_WRITE_AUDIT_LOG (caminho gravável; padrão ~/.google_ads_mcp/write_audit.jsonl)
@@ -85,3 +84,26 @@ Testes locais, sem acesso à conta:
 ```sh
 .venv/bin/python -m unittest discover -s tests -p '*_test.py'
 ```
+
+
+## Autorização local sem arquivos de segredos
+
+Execute em um terminal interativo, da raiz do repositório:
+
+```sh
+.venv/bin/python -m scripts.authorize_local
+```
+
+O assistente pede o ID e o segredo OAuth (entrada oculta), abre o consentimento
+Google com escopo adwords e recebe o retorno em 127.0.0.1 com porta aleatória.
+O refresh token fica somente na memória e no ambiente deste processo.
+Não é impresso nem salvo. Ao sair, será necessário autorizar novamente.
+
+Após autenticar, informe o ID da conta CLIENTE DE TESTE, o ID do administrador
+de teste (se necessário) e MAX_DAILY_BUDGET. O roteiro consulta a conta antes
+de criar recursos. Um OAuth em modo Testando não transforma uma conta Ads
+real em conta de teste.
+
+O developer token deixou de ser obrigatório; o acesso é determinado pelo
+projeto Cloud das credenciais OAuth:
+https://developers.google.com/google-ads/api/docs/api-policy/developer-token

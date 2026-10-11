@@ -62,7 +62,6 @@ def get_write_client(login_customer_id=None):
         "GOOGLE_ADS_CLIENT_ID",
         "GOOGLE_ADS_CLIENT_SECRET",
         "GOOGLE_ADS_REFRESH_TOKEN",
-        "GOOGLE_ADS_DEVELOPER_TOKEN",
     )
     if any(not os.environ.get(name) for name in names):
         raise WriteBlocked(
@@ -77,7 +76,6 @@ def get_write_client(login_customer_id=None):
             refresh_token=os.environ[names[2]],
             token_uri="https://oauth2.googleapis.com/token",
         ),
-        developer_token=os.environ[names[3]],
         use_proto_plus=True,
         login_customer_id=utils._get_login_customer_id(login_customer_id),
     )

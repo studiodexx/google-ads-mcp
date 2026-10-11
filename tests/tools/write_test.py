@@ -424,6 +424,19 @@ class TestAdditionalGuards(WriteTestBase):
 
 
 class TestEnvironmentCredentials(unittest.TestCase):
+    def test_client_without_developer_token(self):
+        with patch.dict(
+            os.environ,
+            {
+                "GOOGLE_ADS_CLIENT_ID": "dummy",
+                "GOOGLE_ADS_CLIENT_SECRET": "dummy",
+                "GOOGLE_ADS_REFRESH_TOKEN": "dummy",
+            },
+            clear=True,
+        ):
+            client = guard.get_write_client()
+            self.assertIsNone(client.developer_token)
+
     def test_no_adc_fallback(self):
         with (
             patch.dict(os.environ, {}, clear=True),
