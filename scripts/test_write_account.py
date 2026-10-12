@@ -49,25 +49,47 @@ def main():
             dry_run=True,
         )
         write.set_status(cid, kind, rid, "PAUSED")
+    verify_existing(cid, campaign_id, amount / 2)
+
+
+def verify_existing(cid, campaign_id, expected_budget):
+    """Read-only verification of the existing integration campaign."""
+    if not str(campaign_id).isascii() or not str(campaign_id).isdigit():
+        raise ValueError("Invalid campaign ID")
+    if not guard._is_test_account(cid, None):
+        raise guard.WriteBlocked("Verification requires a test account.")
     service = guard.get_write_client().get_service("GoogleAdsService")
     rows = list(
         service.search(
             customer_id=cid,
             query=(
-                "SELECT campaign.status, ad_group.status, ad_group_ad.status, "
-                "campaign_budget.amount_micros FROM ad_group_ad "
+                "SELECT campaign.status, ad_group.status, ad_group_ad.status "
+                f"FROM ad_group_ad WHERE campaign.id = {campaign_id}"
+            ),
+        )
+    )
+    if len(rows) != 1:
+        raise RuntimeError("Expected one integration ad")
+    if not all(
+        x.status.name == "PAUSED"
+        for x in (rows[0].campaign, rows[0].ad_group, rows[0].ad_group_ad)
+    ):
+        raise RuntimeError("A resource is not PAUSED")
+    budgets = list(
+        service.search(
+            customer_id=cid,
+            query=(
+                "SELECT campaign_budget.amount_micros FROM campaign "
                 f"WHERE campaign.id = {campaign_id}"
             ),
         )
     )
-    assert len(rows) == 1, "Expected one created ad"
-    row = rows[0]
-    assert all(
-        x.status.name == "PAUSED"
-        for x in (row.campaign, row.ad_group, row.ad_group_ad)
-    )
-    assert row.campaign_budget.amount_micros == guard.micros(amount / 2)
-    print("Verified PAUSED resources:", campaign, group, ad)
+    if len(budgets) != 1 or budgets[
+        0
+    ].campaign_budget.amount_micros != guard.micros(expected_budget):
+        raise RuntimeError("Unexpected campaign budget")
+    print("Verified PAUSED campaign, group and ad:", campaign_id)
+    print("Verified daily budget:", expected_budget)
 
 
 if __name__ == "__main__":

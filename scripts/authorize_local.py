@@ -1,5 +1,6 @@
 """Interactive OAuth bootstrap; credentials stay in process memory/environment."""
 
+import argparse
 import getpass
 import logging
 import os
@@ -65,6 +66,12 @@ def authorize():
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--verify-campaign", help="Read-only verification; no new resources"
+    )
+    parser.add_argument("--expected-budget", type=float, default=0.5)
+    args = parser.parse_args()
     try:
         authorize()
         print("Autorização concluída; nenhum segredo foi salvo ou impresso.")
@@ -86,7 +93,16 @@ def main():
         ).strip()
         from scripts.test_write_account import main as test_account
 
-        test_account()
+        if args.verify_campaign:
+            from scripts.test_write_account import verify_existing
+
+            verify_existing(
+                os.environ["GOOGLE_ADS_TEST_CUSTOMER_ID"],
+                args.verify_campaign,
+                args.expected_budget,
+            )
+        else:
+            test_account()
         print("Integração validada. Recursos permanecem PAUSED.")
     except (Exception, KeyboardInterrupt) as exc:
         # No traceback or provider messages: they may contain secrets.
