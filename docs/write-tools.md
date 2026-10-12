@@ -107,3 +107,34 @@ real em conta de teste.
 O developer token deixou de ser obrigatório; o acesso é determinado pelo
 projeto Cloud das credenciais OAuth:
 https://developers.google.com/google-ads/api/docs/api-policy/developer-token
+
+## Codex e Claude Desktop (macOS)
+
+Os dois clientes podem iniciar scripts/desktop_server.py com o Python da venv
+usando transporte stdio. A configuração local desktop-tools.yaml habilita write.
+Configure o teto, allowlist e conta administradora no ambiente do servidor.
+
+Autorize uma vez por sessão do macOS:
+
+```sh
+.venv/bin/python -m scripts.connect_desktop
+```
+
+O assistente usa entrada oculta e o consentimento Google. As credenciais ficam
+em variáveis ADS_MCP_GOOGLE_ADS_* do launchd da sessão de usuário, carregadas
+pelo launcher para o ambiente do servidor. Não são salvas em arquivos.
+Essas variáveis são acessíveis a processos do mesmo usuário e podem ser herdadas
+por novos aplicativos da sessão; não constituem um cofre de segredos.
+Reinicie Codex e Claude Desktop após autorizar. Ao sair da sessão/reiniciar o
+Mac, autorize novamente.
+
+Para remover as variáveis da sessão:
+
+```sh
+.venv/bin/python -m scripts.connect_desktop --clear
+```
+
+Depois reinicie ambos os clientes para encerrar processos que já receberam
+credenciais. Isso remove a cópia local; a revogação OAuth é feita na conta Google.
+O launcher usa autenticação por ambiente tanto para leitura quanto para escrita.
+Sem autorização, a descoberta das ferramentas funciona, mas chamadas à API falham.
